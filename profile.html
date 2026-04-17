@@ -73,11 +73,11 @@
                 
                 <!-- Profile Header -->
                 <div class="profile-header">
-                    <div class="profile-avatar-large" id="prof-avatar">..</div>
+                    <div class="profile-avatar-large" id="prof-avatar">JD</div>
                     <div class="profile-info">
-                        <h2 id="prof-name">Loading...</h2>
-                        <p id="prof-email">loading@demo.com</p>
-                        <p id="prof-phone" style="margin-top: 0.5rem;">+1 000-0000</p>
+                        <h2 id="prof-name">John Doe</h2>
+                        <p id="prof-email">user@demo.com</p>
+                        <p id="prof-phone" style="margin-top: 0.5rem;">+1 555-0198</p>
                     </div>
                 </div>
 
@@ -86,9 +86,20 @@
                     <div class="settings-card">
                         <h3 class="section-title">Linked Accounts</h3>
                         <div id="linked-accounts-container">
-                            <!-- Injected -->
+                            <div class="linked-account">
+                                <div style="width:40px; height:40px; border-radius:8px; background:white; color:black; display:flex; align-items:center; justify-content:center; font-weight:bold;">
+                                    <i data-lucide="landmark"></i>
+                                </div>
+                                <div style="font-weight: 500;">SBI - ****1234</div>
+                            </div>
+                            <div class="linked-account">
+                                <div style="width:40px; height:40px; border-radius:8px; background:white; color:black; display:flex; align-items:center; justify-content:center; font-weight:bold;">
+                                    <i data-lucide="landmark"></i>
+                                </div>
+                                <div style="font-weight: 500;">HDFC - ****9876</div>
+                            </div>
                         </div>
-                        <button class="btn btn-secondary btn-full" onclick="showToast('Linking accounts is a premium feature.', 'warning')">
+                        <button class="btn btn-secondary btn-full">
                             + Add New Account
                         </button>
                     </div>
@@ -131,32 +142,9 @@
         </main>
     </div>
 
-    <script src="js/data.js"></script>
     <script src="js/app.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const user = window.DB.getCurrentUser();
-            if(user) {
-                document.getElementById('prof-avatar').innerText = user.avatarLetters;
-                document.getElementById('prof-name').innerText = user.name;
-                document.getElementById('prof-email').innerText = user.email;
-                document.getElementById('prof-phone').innerText = user.phone;
-
-                const lnkContainer = document.getElementById('linked-accounts-container');
-                if(lnkContainer && user.linkedAccounts) {
-                    lnkContainer.innerHTML = '';
-                    user.linkedAccounts.forEach(acc => {
-                        lnkContainer.insertAdjacentHTML('beforeend', `
-                            <div class="linked-account">
-                                <div style="width:40px; height:40px; border-radius:8px; background:white; color:black; display:flex; align-items:center; justify-content:center; font-weight:bold;">
-                                    <i data-lucide="landmark"></i>
-                                </div>
-                                <div style="font-weight: 500;">${acc}</div>
-                            </div>
-                        `);
-                    });
-                }
-            }
             if(window.lucide) window.lucide.createIcons();
 
             const themeSelector = document.getElementById('theme-selector');
@@ -166,12 +154,11 @@
                     const selectedMode = e.target.value;
                     localStorage.setItem('theme', selectedMode);
                     document.documentElement.setAttribute('data-theme', selectedMode);
-                    window.showToast("Theme updated successfully!", "success");
                 });
             }
         });
 
-        function logout() { localStorage.setItem('isLoggedIn', 'false'); window.location.href = 'index.html'; }
+        function logout() { window.location.href = 'index.html'; }
     </script>
 </body>
 </html>

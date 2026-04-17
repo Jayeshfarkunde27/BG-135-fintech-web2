@@ -38,58 +38,38 @@
 
             <div class="fade-in">
                 <div style="background: var(--surface-dark); border: 1px solid var(--surface-border); border-radius: 16px; overflow: hidden;" id="notifs-container">
-                    <!-- Injected -->
+                    <div style="display:flex; gap: 1.5rem; padding: 1.5rem; border-bottom: 1px solid var(--surface-border); align-items: center;">
+                        <div style="width: 48px; height: 48px; border-radius: 50%; background: var(--bg-dark); display:flex; align-items:center; justify-content:center; color: var(--primary-color);">
+                            <i data-lucide="shield-alert"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; font-size: 1.1rem; margin-bottom: 0.25rem;">Security Alert</div>
+                            <div style="color: var(--text-muted); font-size: 0.875rem;">New login from Windows device.</div>
+                            <div style="color: var(--text-muted); font-size: 0.75rem; margin-top: 0.5rem; opacity: 0.7;">Apr 03, 02:00 PM</div>
+                        </div>
+                    </div>
+                    <div style="display:flex; gap: 1.5rem; padding: 1.5rem; border-bottom: 1px solid var(--surface-border); align-items: center;">
+                        <div style="width: 48px; height: 48px; border-radius: 50%; background: var(--bg-dark); display:flex; align-items:center; justify-content:center; color: var(--primary-color);">
+                            <i data-lucide="credit-card"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; font-size: 1.1rem; margin-bottom: 0.25rem;">Payment Reminder</div>
+                            <div style="color: var(--text-muted); font-size: 0.875rem;">Credit card bill due in 3 days.</div>
+                            <div style="color: var(--text-muted); font-size: 0.75rem; margin-top: 0.5rem; opacity: 0.7;">Apr 02, 10:00 AM</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </main>
     </div>
 
-    <script src="js/data.js"></script>
     <script src="js/app.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            renderNotifications();
-        });
-
-        function renderNotifications() {
-            const notifsContainer = document.getElementById('notifs-container');
-            const notifs = window.DB.getNotifications();
-            
-            notifsContainer.innerHTML = '';
-
-            if(notifs.length === 0) {
-                notifsContainer.innerHTML = '<div style="padding: 3rem; text-align: center; color: var(--text-muted);">You have no new notifications.</div>';
-                return;
-            }
-
-            notifs.forEach(n => {
-                const icon = n.title.includes("Security") ? 'shield-alert' : 
-                             n.title.includes("Payment") ? 'credit-card' : 'bell';
-                
-                const html = `
-                    <div style="display:flex; gap: 1.5rem; padding: 1.5rem; border-bottom: 1px solid var(--surface-border); align-items: center;">
-                        <div style="width: 48px; height: 48px; border-radius: 50%; background: var(--bg-dark); display:flex; align-items:center; justify-content:center; color: var(--primary-color);">
-                            <i data-lucide="${icon}"></i>
-                        </div>
-                        <div>
-                            <div style="font-weight: 600; font-size: 1.1rem; margin-bottom: 0.25rem;">${n.title}</div>
-                            <div style="color: var(--text-muted); font-size: 0.875rem;">${n.message}</div>
-                            <div style="color: var(--text-muted); font-size: 0.75rem; margin-top: 0.5rem; opacity: 0.7;">${window.formatDate(n.date)}</div>
-                        </div>
-                    </div>
-                `;
-                notifsContainer.insertAdjacentHTML('beforeend', html);
-            });
-            if(window.lucide) window.lucide.createIcons();
-        }
-
+        lucide.createIcons();
         window.clearNotifications = function() {
-            localStorage.setItem("notifications", JSON.stringify([]));
-            renderNotifications();
-            window.showToast("Notifications cleared.", "success");
+            document.getElementById('notifs-container').innerHTML = '<div style="padding: 3rem; text-align: center; color: var(--text-muted);">You have no new notifications.</div>';
         };
-
-        function logout() { localStorage.setItem('isLoggedIn', 'false'); window.location.href = 'index.html'; }
+        function logout() { window.location.href = 'index.html'; }
     </script>
 </body>
 </html>

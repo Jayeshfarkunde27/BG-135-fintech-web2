@@ -137,8 +137,8 @@
                         <i data-lucide="bell"></i>
                         <span style="position:absolute; top:-2px; right:-2px; background:var(--danger); width:8px; height:8px; border-radius:50%;"></span>
                     </a>
-                    <span id="header-welcome">Hello</span>
-                    <div class="avatar" id="header-avatar" onclick="window.location.href='profile.html'" style="cursor: pointer;"></div>
+                    <span id="header-welcome">Hello, John</span>
+                    <div class="avatar" id="header-avatar" onclick="window.location.href='profile.html'" style="cursor: pointer;">JD</div>
                 </div>
             </header>
 
@@ -153,7 +153,7 @@
                                 <i data-lucide="eye"></i>
                             </button>
                         </div>
-                        <div class="balance-amount" id="db-balance" data-amount="0">...</div>
+                        <div class="balance-amount" id="db-balance">$14,502.50</div>
                         <div class="balance-footer">
                             <span>Status: Active</span>
                             <span>+2.4% this month</span>
@@ -180,7 +180,36 @@
                     <div style="margin-top: 2rem;">
                         <h3 class="section-title">Recent Transactions <a href="accounts.html">View All</a></h3>
                         <div class="txn-list" id="db-txns">
-                            <!-- Injected via JS -->
+                            <div class="txn-item">
+                                <div class="txn-info">
+                                    <div class="txn-icon debit"><i data-lucide="shopping-bag"></i></div>
+                                    <div class="txn-details">
+                                        <h4>Amazon Purchase</h4>
+                                        <p>Apr 01, 10:30 AM</p>
+                                    </div>
+                                </div>
+                                <div class="txn-amount" style="color: var(--danger); font-weight: 600;">-$120.50</div>
+                            </div>
+                            <div class="txn-item">
+                                <div class="txn-info">
+                                    <div class="txn-icon credit"><i data-lucide="arrow-down-left"></i></div>
+                                    <div class="txn-details">
+                                        <h4>Tech Corp Inc.</h4>
+                                        <p>Mar 31, 09:00 AM</p>
+                                    </div>
+                                </div>
+                                <div class="txn-amount" style="color: var(--success); font-weight: 600;">+$4,500.00</div>
+                            </div>
+                            <div class="txn-item">
+                                <div class="txn-info">
+                                    <div class="txn-icon debit"><i data-lucide="coffee"></i></div>
+                                    <div class="txn-details">
+                                        <h4>Starbucks</h4>
+                                        <p>Mar 30, 07:45 PM</p>
+                                    </div>
+                                </div>
+                                <div class="txn-amount" style="color: var(--danger); font-weight: 600;">-$35.00</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -191,7 +220,28 @@
                     <div class="widget">
                         <h3 class="section-title">Recent Alerts <a href="notifications.html" style="font-size: 0.75rem;"><i data-lucide="bell"></i></a></h3>
                         <div class="txn-list" id="db-notifications" style="gap: 1rem;">
-                            <!-- Injected via JS -->
+                            <div class="txn-item" style="border: none; padding: 0.5rem 0;">
+                                <div class="txn-info">
+                                    <div class="txn-icon" style="background: rgba(99, 102, 241, 0.1); color: var(--primary-color);">
+                                        <i data-lucide="shield"></i>
+                                    </div>
+                                    <div class="txn-details">
+                                        <h4 style="font-size: 0.875rem;">Security Alert</h4>
+                                        <p style="font-size: 0.7rem;">New login from Windows device.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="txn-item" style="border: none; padding: 0.5rem 0;">
+                                <div class="txn-info">
+                                    <div class="txn-icon" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">
+                                        <i data-lucide="clock"></i>
+                                    </div>
+                                    <div class="txn-details">
+                                        <h4 style="font-size: 0.875rem;">Payment Reminder</h4>
+                                        <p style="font-size: 0.7rem;">Credit card bill due in 3 days.</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -207,13 +257,32 @@
         </main>
     </div>
 
-    <script src="js/data.js"></script>
     <script src="js/app.js"></script>
-    <script src="js/dashboard.js"></script>
     <script>
         lucide.createIcons();
+        
+        // Static Chart Initialization
+        const ctx = document.getElementById('spendChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Shopping', 'Food', 'Bills', 'Others'],
+                datasets: [{
+                    data: [40, 20, 25, 15],
+                    backgroundColor: ['#6366f1', '#10b981', '#f59e0b', '#ec4899'],
+                    borderWidth: 0,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                cutout: '70%',
+                plugins: {
+                    legend: { position: 'bottom', labels: { color: '#94a3b8', boxWidth: 12, font: { size: 10 } } }
+                }
+            }
+        });
+
         function logout() {
-            localStorage.setItem('isLoggedIn', 'false');
             window.location.href = 'index.html';
         }
     </script>

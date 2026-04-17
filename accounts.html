@@ -68,9 +68,9 @@
                 <div class="glass" style="padding: 1.5rem; margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center;">
                     <div>
                         <div class="text-muted" style="margin-bottom: 0.5rem;">Current Balance</div>
-                        <div style="font-size: 2rem; font-weight: 700;" id="acc-balance">...</div>
+                        <div style="font-size: 2rem; font-weight: 700;" id="acc-balance">$14,502.50</div>
                     </div>
-                    <button class="btn btn-primary" onclick="downloadStatement()">
+                    <button class="btn btn-primary" onclick="window.print()">
                         <i data-lucide="download"></i> Download PDF
                     </button>
                 </div>
@@ -78,26 +78,73 @@
                 <!-- Filters -->
                 <div class="filter-bar">
                     <div class="filter-group">
-                        <button class="filter-btn active" onclick="filterTxs('all', this)">All</button>
-                        <button class="filter-btn" onclick="filterTxs('credit', this)">Credits</button>
-                        <button class="filter-btn" onclick="filterTxs('debit', this)">Debits</button>
+                        <button class="filter-btn active">All</button>
+                        <button class="filter-btn">Credits</button>
+                        <button class="filter-btn">Debits</button>
                     </div>
                 </div>
 
                 <!-- Txn List -->
                 <div class="txn-list-full" id="acc-txns">
-                    <!-- Injected via JS -->
+                    <div class="txn-item">
+                        <div class="txn-info">
+                            <div class="txn-icon" style="background: rgba(239, 68, 68, 0.1); color: var(--danger);"><i data-lucide="shopping-bag"></i></div>
+                            <div class="txn-details">
+                                <h4>Amazon Purchase</h4>
+                                <p>Apr 01, 10:30 AM • Shopping</p>
+                            </div>
+                        </div>
+                        <div class="txn-amount" style="color: var(--danger); font-weight: 600;">-$120.50</div>
+                    </div>
+                    <div class="txn-item">
+                        <div class="txn-info">
+                            <div class="txn-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--success);"><i data-lucide="arrow-down-left"></i></div>
+                            <div class="txn-details">
+                                <h4>Tech Corp Inc.</h4>
+                                <p>Mar 31, 09:00 AM • Salary</p>
+                            </div>
+                        </div>
+                        <div class="txn-amount" style="color: var(--success); font-weight: 600;">+$4,500.00</div>
+                    </div>
+                    <div class="txn-item">
+                        <div class="txn-info">
+                            <div class="txn-icon" style="background: rgba(239, 68, 68, 0.1); color: var(--danger);"><i data-lucide="coffee"></i></div>
+                            <div class="txn-details">
+                                <h4>Starbucks</h4>
+                                <p>Mar 30, 07:45 PM • Food</p>
+                            </div>
+                        </div>
+                        <div class="txn-amount" style="color: var(--danger); font-weight: 600;">-$35.00</div>
+                    </div>
+                    <div class="txn-item">
+                        <div class="txn-info">
+                            <div class="txn-icon" style="background: rgba(239, 68, 68, 0.1); color: var(--danger);"><i data-lucide="tv"></i></div>
+                            <div class="txn-details">
+                                <h4>Netflix Subscription</h4>
+                                <p>Mar 28, 02:20 PM • Bills</p>
+                            </div>
+                        </div>
+                        <div class="txn-amount" style="color: var(--danger); font-weight: 600;">-$89.99</div>
+                    </div>
+                    <div class="txn-item">
+                        <div class="txn-info">
+                            <div class="txn-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--success);"><i data-lucide="user"></i></div>
+                            <div class="txn-details">
+                                <h4>Alex received</h4>
+                                <p>Mar 25, 11:15 AM • Transfer</p>
+                            </div>
+                        </div>
+                        <div class="txn-amount" style="color: var(--success); font-weight: 600;">+$200.00</div>
+                    </div>
                 </div>
             </div>
         </main>
     </div>
 
-    <script src="js/data.js"></script>
     <script src="js/app.js"></script>
-    <script src="js/accounts.js"></script>
     <script>
         lucide.createIcons();
-        function logout() { localStorage.setItem('isLoggedIn', 'false'); window.location.href = 'index.html'; }
+        function logout() { window.location.href = 'index.html'; }
     </script>
 </body>
 </html>

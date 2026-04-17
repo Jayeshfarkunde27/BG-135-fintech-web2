@@ -195,12 +195,39 @@
         </main>
     </div>
 
-    <script src="js/data.js"></script>
     <script src="js/app.js"></script>
-    <script src="js/payments.js"></script>
     <script>
         lucide.createIcons();
-        function logout() { localStorage.setItem('isLoggedIn', 'false'); window.location.href = 'index.html'; }
+        function logout() { window.location.href = 'index.html'; }
+
+        // Basic Tab Switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById(tab.dataset.target).classList.add('active');
+            });
+        });
+
+        // Mock Payment Flow
+        document.querySelectorAll('.payment-form').forEach(form => {
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                document.getElementById('forms-container').style.display = 'none';
+                document.querySelector('.tabs').style.display = 'none';
+                document.getElementById('processing-screen').style.display = 'block';
+                
+                setTimeout(() => {
+                    document.getElementById('processing-screen').style.display = 'none';
+                    document.getElementById('status-screen').style.display = 'flex';
+                    document.getElementById('status-screen').classList.add('active');
+                    document.getElementById('status-icon').innerHTML = '<i data-lucide="check-circle" style="width:40px; height:40px;"></i>';
+                    document.getElementById('status-icon').classList.add('success');
+                    lucide.createIcons();
+                }, 1500);
+            });
+        });
     </script>
 </body>
 </html>
