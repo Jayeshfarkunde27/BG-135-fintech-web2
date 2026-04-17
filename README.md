@@ -284,3 +284,14 @@ Open for educational and development use.
 ---
 
 💡 *Bank smarter. Build faster. Simulate better.*
+
+## New features
+ * added a qr scanner to the dashboard from which we can make payment through qr codes and  we can upload qr code from gallery also.
+ * added a reward section
+ * added a database using firebase
+ * platform has authentication system
+ * made all existing function working
+ * can add various bank account to the profile
+ *  
+## Instruction 
+* To deploy app node.js is required in Pc enviroment 
