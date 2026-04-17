@@ -121,6 +121,7 @@
                 <li><a href="cards.html"><i data-lucide="credit-card"></i> Cards</a></li>
                 <li><a href="payments.html"><i data-lucide="send"></i> Payments</a></li>
                 <li><a href="profile.html"><i data-lucide="user"></i> Profile</a></li>
+                <li><a href="rewards.html"><i data-lucide="gift"></i> Rewards</a></li>
                 <li style="margin-top: 2rem;"><a href="#" onclick="logout()"><i data-lucide="log-out"></i> Logout</a></li>
             </ul>
         </aside>
@@ -132,13 +133,16 @@
                     <i data-lucide="menu"></i>
                 </button>
                 <h1 class="page-title fade-in">Dashboard</h1>
-                <div class="user-quick-profile fade-in">
+                <div class="user-quick-profile fade-in" style="display: flex; align-items: center;">
+                    <a href="scanner.html" style="margin-right: 1rem; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; transition: color 0.2s;" onmouseover="this.style.color='var(--primary-color)'" onmouseout="this.style.color='var(--text-muted)'" title="Scan QR">
+                        <i data-lucide="scan"></i>
+                    </a>
                     <a href="notifications.html" style="position:relative; margin-right: 1rem; color: var(--text-muted); cursor: pointer; display: flex; align-items: center;">
                         <i data-lucide="bell"></i>
                         <span style="position:absolute; top:-2px; right:-2px; background:var(--danger); width:8px; height:8px; border-radius:50%;"></span>
                     </a>
-                    <span id="header-welcome">Hello, John</span>
-                    <div class="avatar" id="header-avatar" onclick="window.location.href='profile.html'" style="cursor: pointer;">JD</div>
+                    <span id="header-welcome" style="margin-right: 0.75rem;">Hello, John</span>
+                    <div class="profile-avatar-large" id="header-avatar" onclick="window.location.href='profile.html'" style="cursor: pointer; width: 40px; height: 40px; font-size: 1rem;">JD</div>
                 </div>
             </header>
 
@@ -153,7 +157,7 @@
                                 <i data-lucide="eye"></i>
                             </button>
                         </div>
-                        <div class="balance-amount" id="db-balance">$14,502.50</div>
+                        <div class="balance-amount" id="db-balance">₹14,502.50</div>
                         <div class="balance-footer">
                             <span>Status: Active</span>
                             <span>+2.4% this month</span>
@@ -188,7 +192,7 @@
                                         <p>Apr 01, 10:30 AM</p>
                                     </div>
                                 </div>
-                                <div class="txn-amount" style="color: var(--danger); font-weight: 600;">-$120.50</div>
+                                <div class="txn-amount" style="color: var(--danger); font-weight: 600;">-₹120.50</div>
                             </div>
                             <div class="txn-item">
                                 <div class="txn-info">
@@ -198,7 +202,7 @@
                                         <p>Mar 31, 09:00 AM</p>
                                     </div>
                                 </div>
-                                <div class="txn-amount" style="color: var(--success); font-weight: 600;">+$4,500.00</div>
+                                <div class="txn-amount" style="color: var(--success); font-weight: 600;">+₹4,500.00</div>
                             </div>
                             <div class="txn-item">
                                 <div class="txn-info">
@@ -208,7 +212,7 @@
                                         <p>Mar 30, 07:45 PM</p>
                                     </div>
                                 </div>
-                                <div class="txn-amount" style="color: var(--danger); font-weight: 600;">-$35.00</div>
+                                <div class="txn-amount" style="color: var(--danger); font-weight: 600;">-₹35.00</div>
                             </div>
                         </div>
                     </div>

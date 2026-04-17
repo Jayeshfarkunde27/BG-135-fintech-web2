@@ -51,6 +51,7 @@
                 <li><a href="cards.html"><i data-lucide="credit-card"></i> Cards</a></li>
                 <li><a href="payments.html" class="active"><i data-lucide="send"></i> Payments</a></li>
                 <li><a href="profile.html"><i data-lucide="user"></i> Profile</a></li>
+                <li><a href="rewards.html"><i data-lucide="gift"></i> Rewards</a></li>
                 <li style="margin-top: 2rem;"><a href="#" onclick="logout()"><i data-lucide="log-out"></i> Logout</a></li>
             </ul>
         </aside>
@@ -80,7 +81,7 @@
                                 <input type="text" class="form-control" placeholder="username@bank" required>
                             </div>
                             <div class="form-group">
-                                <label>Amount ($)</label>
+                                <label>Amount (₹)</label>
                                 <input type="number" class="form-control" name="amount" min="1" step="0.01" placeholder="0.00" required>
                             </div>
                             <div class="form-group">
@@ -108,7 +109,7 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>Amount ($)</label>
+                                <label>Amount (₹)</label>
                                 <input type="number" class="form-control" name="amount" min="1" step="0.01" placeholder="0.00" required>
                             </div>
                             <button type="submit" class="btn btn-primary btn-full">Recharge Now</button>
@@ -133,7 +134,7 @@
                                 <input type="text" class="form-control" placeholder="1234567890" required>
                             </div>
                             <div class="form-group">
-                                <label>Amount ($)</label>
+                                <label>Amount (₹)</label>
                                 <input type="number" class="form-control" name="amount" min="1" step="0.01" placeholder="0.00" required>
                             </div>
                             <button type="submit" class="btn btn-primary btn-full">Pay Bill</button>
@@ -147,7 +148,7 @@
                                 <input type="text" class="form-control" placeholder="user@bank" required>
                             </div>
                             <div class="form-group">
-                                <label>Amount ($)</label>
+                                <label>Amount (₹)</label>
                                 <input type="number" class="form-control" name="amount" min="1" step="0.01" placeholder="0.00" required>
                             </div>
                             <button type="submit" class="btn btn-primary btn-full">Proceed to Pay</button>
@@ -214,6 +215,33 @@
         document.querySelectorAll('.payment-form').forEach(form => {
             form.addEventListener('submit', (e) => {
                 e.preventDefault();
+                
+                // Deduct from Balance and Record Transaction
+                const amountInput = form.querySelector('[name="amount"]');
+                let txnIdLocal = '#000000';
+                if (amountInput && amountInput.value) {
+                    const success = window.BalanceManager.deduct(amountInput.value);
+                    if (!success) {
+                        alert("Insufficient funds or invalid amount!");
+                        return;
+                    }
+                    
+                    // Grab a recipient name or category if title wasn't explicitly given
+                    const recipientInput = form.querySelector('input[type="text"]:not([name="title"]), input[type="tel"], select');
+                    const recipientName = recipientInput ? recipientInput.value : '';
+                    
+                    const titleInput = form.querySelector('[name="title"]');
+                    let tDesc = form.id.replace('form-', '').toUpperCase() + ' Payment';
+                    
+                    if (titleInput && titleInput.value) {
+                        tDesc = titleInput.value;
+                    } else if (recipientName) {
+                        tDesc = 'To: ' + recipientName;
+                    }
+                    
+                    txnIdLocal = window.TransactionManager.addTransaction(tDesc, amountInput.value) || txnIdLocal;
+                }
+                
                 document.getElementById('forms-container').style.display = 'none';
                 document.querySelector('.tabs').style.display = 'none';
                 document.getElementById('processing-screen').style.display = 'block';
@@ -224,6 +252,7 @@
                     document.getElementById('status-screen').classList.add('active');
                     document.getElementById('status-icon').innerHTML = '<i data-lucide="check-circle" style="width:40px; height:40px;"></i>';
                     document.getElementById('status-icon').classList.add('success');
+                    document.getElementById('status-desc').textContent = 'Transaction ID: ' + txnIdLocal;
                     lucide.createIcons();
                 }, 1500);
             });

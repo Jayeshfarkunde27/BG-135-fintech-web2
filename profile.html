@@ -58,6 +58,7 @@
                 <li><a href="cards.html"><i data-lucide="credit-card"></i> Cards</a></li>
                 <li><a href="payments.html"><i data-lucide="send"></i> Payments</a></li>
                 <li><a href="profile.html" class="active"><i data-lucide="user"></i> Profile</a></li>
+                <li><a href="rewards.html"><i data-lucide="gift"></i> Rewards</a></li>
                 <li style="margin-top: 2rem;"><a href="#" onclick="logout()"><i data-lucide="log-out"></i> Logout</a></li>
             </ul>
         </aside>
@@ -74,8 +75,11 @@
                 <!-- Profile Header -->
                 <div class="profile-header">
                     <div class="profile-avatar-large" id="prof-avatar">JD</div>
-                    <div class="profile-info">
-                        <h2 id="prof-name">John Doe</h2>
+                    <div class="profile-info" style="flex: 1;">
+                        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.25rem;">
+                            <h2 id="prof-name" style="margin-bottom: 0;">John Doe</h2>
+                            <button id="edit-profile-btn" class="action-btn" style="background: rgba(99, 102, 241, 0.1); border:none; color:var(--primary-color); cursor:pointer; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center;" title="Edit Name"><i data-lucide="edit-2" style="width:16px; height:16px;"></i></button>
+                        </div>
                         <p id="prof-email">user@demo.com</p>
                         <p id="prof-phone" style="margin-top: 0.5rem;">+1 555-0198</p>
                     </div>
@@ -99,7 +103,7 @@
                                 <div style="font-weight: 500;">HDFC - ****9876</div>
                             </div>
                         </div>
-                        <button class="btn btn-secondary btn-full">
+                        <button class="btn btn-secondary btn-full" id="btn-add-account">
                             + Add New Account
                         </button>
                     </div>
@@ -128,7 +132,7 @@
                         <div class="form-group">
                             <label>Currency Display</label>
                             <select class="form-control" style="appearance:none;">
-                                <option>USD ($)</option>
+                                <option>INR (₹)</option>
                                 <option>EUR (€)</option>
                             </select>
                         </div>
@@ -154,6 +158,34 @@
                     const selectedMode = e.target.value;
                     localStorage.setItem('theme', selectedMode);
                     document.documentElement.setAttribute('data-theme', selectedMode);
+                });
+            }
+
+            const editBtn = document.getElementById('edit-profile-btn');
+            if(editBtn) {
+                editBtn.addEventListener('click', () => {
+                    const currentName = window.ProfileManager.getProfile().name;
+                    const newName = prompt("Enter your new name:", currentName);
+                    if(newName !== null && newName.trim() !== '') {
+                        if(window.ProfileManager.updateName(newName)) {
+                            window.showToast("Profile updated successfully", "success");
+                        }
+                    }
+                });
+            }
+            
+            const addAccountBtn = document.getElementById('btn-add-account');
+            if(addAccountBtn) {
+                addAccountBtn.addEventListener('click', () => {
+                    const bankName = prompt("Enter Bank Name (e.g. Chase, Axis):");
+                    if (!bankName || bankName.trim() === '') return;
+                    
+                    const last4 = prompt("Enter Last 4 digits of Account/Card number:");
+                    if (!last4 || last4.trim() === '') return;
+                    
+                    if(window.ProfileManager.addAccount(bankName, last4)) {
+                        window.showToast("Account added successfully", "success");
+                    }
                 });
             }
         });
