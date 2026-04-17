@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NeoBank - Log In</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="stylesheet" href="css/styles.css">
     <style>
@@ -23,64 +22,109 @@
             text-align: center;
         }
 
-        .auth-header {
-            margin-bottom: 2rem;
-        }
-
+        .auth-header { margin-bottom: 2rem; }
         .auth-header h1 {
             color: var(--primary-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
+            display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+            font-size: 2rem; margin-bottom: 0.5rem;
         }
+        .auth-header p { color: var(--text-muted); }
 
-        .auth-header p {
-            color: var(--text-muted);
-        }
-
-        .form-group {
-            text-align: left;
-        }
-
-        .btn-full {
-            width: 100%;
-            margin-top: 1rem;
-        }
-
-        .otp-section {
-            display: none;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .otp-inputs {
-            display: flex;
-            gap: 0.5rem;
-            justify-content: space-between;
-        }
-
-        .otp-inputs input {
-            width: 48px;
-            height: 56px;
-            text-align: center;
-            font-size: 1.5rem;
-            font-weight: bold;
-        }
+        .form-group { text-align: left; }
+        .btn-full { width: 100%; margin-top: 1rem; }
 
         .toggle-form {
-            margin-top: 1.5rem;
-            font-size: 0.875rem;
-            color: var(--text-muted);
+            margin-top: 1.5rem; font-size: 0.875rem; color: var(--text-muted);
         }
-
-        .toggle-form a {
-            cursor: pointer;
-            font-weight: 600;
+        .toggle-form a { cursor: pointer; font-weight: 600; }
+        
+        .error-message {
+            color: var(--danger);
+            font-size: 0.875rem;
+            margin-top: 1rem;
+            display: none;
         }
     </style>
+
+    <!-- Firebase Web SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } 
+          from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyA2rFkDhStstURTiplK5VNfcRBfvYCcAts",
+            authDomain: "neobank-e9781.firebaseapp.com",
+            projectId: "neobank-e9781",
+            storageBucket: "neobank-e9781.firebasestorage.app",
+            messagingSenderId: "657585838388",
+            appId: "1:657585838388:web:2cdde771b60bcf86dd6d61"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // Export auth so we can use it in api.js globally
+        window.FirebaseAuth = auth;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginForm = document.getElementById('login-form');
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const submitBtn = document.getElementById('submit-btn');
+            const errorMsg = document.getElementById('error-msg');
+            const toggleLink = document.getElementById('toggle-link');
+            const formSubtitle = document.getElementById('form-subtitle');
+
+            let isLoggingIn = true;
+
+            // Toggle Login / Signup
+            toggleLink.addEventListener('click', () => {
+                isLoggingIn = !isLoggingIn;
+                submitBtn.innerHTML = isLoggingIn ? 'Sign In <i data-lucide="arrow-right"></i>' : 'Create Account <i data-lucide="arrow-right"></i>';
+                toggleLink.innerHTML = isLoggingIn ? 'New here? <a>Create an account</a>' : 'Already have an account? <a>Sign in</a>';
+                formSubtitle.textContent = isLoggingIn ? 'Secure access to your finances' : 'Join NeoBank today';
+                lucide.createIcons();
+            });
+
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                errorMsg.style.display = 'none';
+                submitBtn.disabled = true;
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = 'Processing...';
+
+                try {
+                    const email = emailInput.value;
+                    const password = passwordInput.value;
+
+                    if (isLoggingIn) {
+                        await signInWithEmailAndPassword(auth, email, password);
+                    } else {
+                        await createUserWithEmailAndPassword(auth, email, password);
+                    }
+                    
+                    // Proceed to dashboard on success
+                    window.location.href = 'dashboard.html';
+                } catch (error) {
+                    console.error("Auth Error:", error);
+                    errorMsg.textContent = error.message;
+                    errorMsg.style.display = 'block';
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                }
+            });
+
+            // If already logged in, redirect to dashboard
+            onAuthStateChanged(auth, (user) => {
+                if(user) {
+                    // window.location.href = 'dashboard.html';
+                }
+            });
+        });
+    </script>
 </head>
 <body>
 
@@ -90,34 +134,34 @@
             <p id="form-subtitle">Secure access to your finances</p>
         </div>
 
-        <!-- Login Form -->
-        <form id="login-form" action="dashboard.html">
+        <form id="login-form">
             <div class="form-group">
                 <label for="email">Email Address</label>
                 <div style="position: relative;">
                     <i data-lucide="mail" style="position: absolute; left: 12px; top: 12px; color: var(--text-muted);"></i>
-                    <input type="email" id="email" class="form-control" placeholder="user@demo.com" style="padding-left: 40px;" required value="user@demo.com">
+                    <input type="email" id="email" class="form-control" placeholder="user@demo.com" style="padding-left: 40px;" required>
                 </div>
             </div>
             <div class="form-group">
                 <label for="password">Password</label>
                 <div style="position: relative;">
                     <i data-lucide="lock" style="position: absolute; left: 12px; top: 12px; color: var(--text-muted);"></i>
-                    <input type="password" id="password" class="form-control" placeholder="••••••••" style="padding-left: 40px;" required value="password123">
+                    <input type="password" id="password" class="form-control" placeholder="••••••••" style="padding-left: 40px;" required>
                 </div>
             </div>
-            <button type="submit" class="btn btn-primary btn-full">
-                Continue <i data-lucide="arrow-right"></i>
+            
+            <div id="error-msg" class="error-message">Invalid credentials</div>
+
+            <button type="submit" id="submit-btn" class="btn btn-primary btn-full">
+                Sign In <i data-lucide="arrow-right"></i>
             </button>
         </form>
 
-        <div class="toggle-form" id="signup-prompt">
+        <div class="toggle-form" id="toggle-link">
             New here? <a>Create an account</a>
         </div>
     </div>
 
-    <script>
-        lucide.createIcons();
-    </script>
+    <script> lucide.createIcons(); </script>
 </body>
 </html>

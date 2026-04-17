@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Users Setup - NeoBank</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .users-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .user-form-card {
+            background: var(--surface-dark);
+            border: 1px solid var(--surface-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .user-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--surface-dark);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--surface-border);
+        }
+
+        .user-table th, .user-table td {
+            padding: 1rem 1.5rem;
+            text-align: left;
+            border-bottom: 1px solid var(--surface-border);
+        }
+
+        .user-table th {
+            font-weight: 600;
+            color: var(--text-muted);
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .user-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all var(--transition-fast);
+        }
+
+        .action-btn:hover {
+            background: var(--bg-dark);
+        }
+
+        .action-edit { color: var(--primary-color); }
+        .action-delete { color: var(--danger); }
+        
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+        }
+
+        .message {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+        
+        .message.success {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+
+        .message.error {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+            border: 1px solid var(--danger);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <i data-lucide="zap"></i> NeoBank
+            </div>
+            <ul class="nav-links">
+                <li><a href="dashboard.html"><i data-lucide="layout-dashboard"></i> Dashboard</a></li>
+                <li><a href="users.html" class="active"><i data-lucide="users"></i> User Admin</a></li>
+                <li><a href="accounts.html"><i data-lucide="wallet"></i> Accounts</a></li>
+                <li><a href="cards.html"><i data-lucide="credit-card"></i> Cards</a></li>
+                <li><a href="payments.html"><i data-lucide="send"></i> Payments</a></li>
+                <li><a href="profile.html"><i data-lucide="user"></i> Profile</a></li>
+                <li style="margin-top: 2rem;"><a href="#" onclick="logout()"><i data-lucide="log-out"></i> Logout</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-header">
+                <button class="menu-toggle" id="menu-toggle"><i data-lucide="menu"></i></button>
+                <h1 class="page-title fade-in">User Management</h1>
+            </header>
+
+            <div class="fade-in">
+                
+                <div id="status-message" class="message"></div>
+
+                <div class="user-form-card">
+                    <h3 class="section-title" id="form-title">Add New User</h3>
+                    <form id="user-form">
+                        <input type="hidden" id="user-id">
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" id="user-name" class="form-control" required placeholder="John Doe">
+                        </div>
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" id="user-email" class="form-control" required placeholder="john@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label>Phone Number (Optional)</label>
+                            <input type="text" id="user-phone" class="form-control" placeholder="+1 234 567 890">
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="submit-btn" style="width: auto; padding: 0.75rem 2rem;">Save User</button>
+                        <button type="button" class="btn btn-secondary" id="cancel-btn" style="display: none; width: auto; padding: 0.75rem 2rem;">Cancel</button>
+                    </form>
+                </div>
+
+                <h3 class="section-title">Directory</h3>
+                <div style="overflow-x: auto;">
+                    <table class="user-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="user-list">
+                            <tr>
+                                <td colspan="4" class="loading">Loading users...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Load Firebase Web SDK and Initialize Auth -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA2rFkDhStstURTiplK5VNfcRBfvYCcAts",
+            authDomain: "neobank-e9781.firebaseapp.com",
+            projectId: "neobank-e9781",
+            storageBucket: "neobank-e9781.firebasestorage.app",
+            messagingSenderId: "657585838388",
+            appId: "1:657585838388:web:2cdde771b60bcf86dd6d61"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        window.FirebaseAuth = getAuth(app);
+        
+        // Listen for auth state to confirm we have the user before loading
+        onAuthStateChanged(window.FirebaseAuth, (user) => {
+            if (!user) {
+                // If not logged in, force them back
+                window.location.href = "index.html";
+            }
+        });
+    </script>
+    
+    <!-- Load the API service first -->
+    <script src="js/api.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        lucide.createIcons();
+        function logout() { window.location.href = 'index.html'; }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const userForm = document.getElementById('user-form');
+            const userList = document.getElementById('user-list');
+            const formTitle = document.getElementById('form-title');
+            const submitBtn = document.getElementById('submit-btn');
+            const cancelBtn = document.getElementById('cancel-btn');
+            const statusMsg = document.getElementById('status-message');
+
+            const idInput = document.getElementById('user-id');
+            const nameInput = document.getElementById('user-name');
+            const emailInput = document.getElementById('user-email');
+            const phoneInput = document.getElementById('user-phone');
+
+            let usersData = [];
+
+            // Show status notification
+            function showMessage(msg, isError = false) {
+                statusMsg.textContent = msg;
+                statusMsg.className = `message ${isError ? 'error' : 'success'}`;
+                statusMsg.style.display = 'block';
+                setTimeout(() => {
+                    statusMsg.style.display = 'none';
+                }, 4000);
+            }
+
+            // Render table rows
+            function renderTable() {
+                if (usersData.length === 0) {
+                    userList.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-muted);">No users found.</td></tr>';
+                    return;
+                }
+
+                userList.innerHTML = '';
+                usersData.forEach(user => {
+                    const tr = document.createElement('tr');
+                    
+                    tr.innerHTML = `
+                        <td style="font-weight: 500;">${user.name}</td>
+                        <td style="color: var(--text-muted);">${user.email}</td>
+                        <td style="color: var(--text-muted);">${user.phone || '-'}</td>
+                        <td>
+                            <button class="action-btn action-edit" onclick="editUser('${user.id}')" title="Edit">
+                                <i data-lucide="edit-2" style="width: 18px; height: 18px;"></i>
+                            </button>
+                            <button class="action-btn action-delete" onclick="deleteUser('${user.id}')" title="Delete">
+                                <i data-lucide="trash-2" style="width: 18px; height: 18px;"></i>
+                            </button>
+                        </td>
+                    `;
+                    userList.appendChild(tr);
+                });
+                lucide.createIcons(); // re-init icons for new buttons
+            }
+
+            // Fetch users from API
+            async function fetchUsers() {
+                try {
+                    usersData = await window.ApiService.getUsers();
+                    renderTable();
+                } catch (error) {
+                    userList.innerHTML = '<tr><td colspan="4" class="loading" style="color: var(--danger);">Failed to load users. Check console.</td></tr>';
+                    console.error(error);
+                }
+            }
+
+            // Form Submit (Create or Update)
+            userForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Saving...';
+
+                const userData = {
+                    name: nameInput.value,
+                    email: emailInput.value,
+                    phone: phoneInput.value
+                };
+
+                const isEdit = idInput.value !== '';
+
+                try {
+                    if (isEdit) {
+                        await window.ApiService.updateUser(idInput.value, userData);
+                        showMessage('User updated successfully!');
+                    } else {
+                        await window.ApiService.createUser(userData);
+                        showMessage('User created successfully!');
+                    }
+                    
+                    resetForm();
+                    await fetchUsers(); // refresh table
+                } catch (error) {
+                    showMessage(error.message, true);
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = isEdit ? 'Update User' : 'Save User';
+                }
+            });
+
+            // Put a user into Edit Mode
+            window.editUser = (id) => {
+                const user = usersData.find(u => u.id === id);
+                if(user) {
+                    idInput.value = user.id;
+                    nameInput.value = user.name;
+                    emailInput.value = user.email;
+                    phoneInput.value = user.phone || '';
+
+                    formTitle.textContent = 'Edit User';
+                    submitBtn.textContent = 'Update User';
+                    cancelBtn.style.display = 'inline-block';
+                    
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            };
+
+            // Cancel Edit Mode
+            cancelBtn.addEventListener('click', resetForm);
+
+            function resetForm() {
+                userForm.reset();
+                idInput.value = '';
+                formTitle.textContent = 'Add New User';
+                submitBtn.textContent = 'Save User';
+                cancelBtn.style.display = 'none';
+            }
+
+            // Delete User
+            window.deleteUser = async (id) => {
+                if(confirm('Are you sure you want to delete this user?')) {
+                    try {
+                        const tr = event.target.closest('tr');
+                        if (tr) tr.style.opacity = '0.5';
+                        
+                        await window.ApiService.deleteUser(id);
+                        showMessage('User deleted successfully!');
+                        await fetchUsers();
+                    } catch (error) {
+                        showMessage(error.message, true);
+                        await fetchUsers();
+                    }
+                }
+            };
+
+            // Initial load - delay fetching until auth responds
+            setTimeout(() => {
+                fetchUsers();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
